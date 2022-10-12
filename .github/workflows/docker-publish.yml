@@ -3,7 +3,7 @@ name: Publish Docker Image
 on:
   # run it on push to the default repository branch
   push:
-    branches: [main]
+    branches: [master]
     
 env: 
   REGISTRY: ghcr.io
