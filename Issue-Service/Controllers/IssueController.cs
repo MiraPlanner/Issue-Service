@@ -10,21 +10,10 @@ namespace Issue_Service.Controllers;
 [Route("issues")]
 public class IssueController : ControllerBase
 {
-    private readonly IRepository<Issue> _issueRepository;
     private readonly IIssueService _issueService;
-    /*
-    private readonly IPublishEndpoint publishEndpoint;
-    */
-
-    /*public IssueController(IRepository<Issue> issueRepository, IPublishEndpoint publishEndpoint)
+   
+    public IssueController(IIssueService issueService)
     {
-        this.issueRepository = issueRepository;
-        this.publishEndpoint = publishEndpoint;
-    }*/
-    
-    public IssueController(IRepository<Issue> issueRepository, IIssueService issueService)
-    {
-        _issueRepository = issueRepository;
         _issueService = issueService;
     }
 
@@ -51,11 +40,6 @@ public class IssueController : ControllerBase
     {
         var issue = await _issueService.Create(createIssueDto);
         
-        // This will be a contract from a common lib
-        // Params will go inside 
-        /*
-        await publishEndpoint.Publish(new IssueCreated());
-        */
         return CreatedAtAction(nameof(GetById), new { id = issue.Id }, issue);
     }
     
@@ -65,12 +49,6 @@ public class IssueController : ControllerBase
         var issue = await _issueService.Update(id, updateIssueDto);
 
         if (issue == null) return NotFound();
-        
-        // This will be a contract from a common lib
-        // Params will go inside 
-        /*
-        await publishEndpoint.Publish(new IssueUpdated(issue.Id, issue.Name, issue.Description));
-        */
 
         return NoContent();
     }
@@ -82,14 +60,6 @@ public class IssueController : ControllerBase
 
         if (issue == null) return NotFound();
 
-        // This will be a contract from a common lib
-        // Params will go inside 
-        /*
-        await publishEndpoint.Publish(new IssueDeleted());
-        */
-
         return NoContent();
     }
-
-
 }
