@@ -44,6 +44,12 @@ public class IssueService : IIssueService
 
         await _issueRepository.Create(issue);
         
+        // This will be a contract from a common lib
+        // Params will go inside 
+        /*
+        await publishEndpoint.Publish(new IssueCreated());
+        */
+        
         return issue.AsDto();
     }
 
@@ -60,7 +66,13 @@ public class IssueService : IIssueService
         issue.UpdatedAt = DateTimeOffset.Now;
         
         await _issueRepository.Update(issue);
-
+        
+        // This will be a contract from a common lib
+        // Params will go inside 
+        /*
+        await publishEndpoint.Publish(new IssueUpdated(issue.Id, issue.Name, issue.Description));
+        */
+        
         return issue.AsDto();
     }
 
@@ -71,6 +83,12 @@ public class IssueService : IIssueService
         if (item == null) return null;
 
         await _issueRepository.Delete(item.Id);
+        
+        // This will be a contract from a common lib
+        // Params will go inside 
+        /*
+        await publishEndpoint.Publish(new IssueDeleted());
+        */
         
         return item.AsDto();
     }
