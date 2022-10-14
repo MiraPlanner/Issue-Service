@@ -10,12 +10,12 @@ env:
   IMAGE_NAME: ${{ github.repository }}  
 
 jobs:
-  build_and_push_docker_image:
+  build-and-push-docker-image:
     name: Build Docker image and push to repository
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Set up Docker Buildx
         id: buildx
