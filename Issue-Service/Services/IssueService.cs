@@ -21,11 +21,11 @@ public class IssueService : IIssueService
         return issues;
     }
 
-    public async Task<IssueDto> GetById(Guid id)
+    public async Task<IssueDto?> GetById(Guid id)
     {
         var issue = await _issueRepository.Get(id);
 
-        if (issue == null) return null!;
+        if (issue == null) return null;
         
         return issue.AsDto();
     }
@@ -34,9 +34,11 @@ public class IssueService : IIssueService
     {
         var issue = new Issue
         {
+            SprintId = createIssueDto.SprintId,
             Title = createIssueDto.Title,
             Description = createIssueDto.Description,
             Duration = createIssueDto.Duration,
+            IssueStatus = createIssueDto.IssueStatus,
             IssueType = createIssueDto.IssueType,
             CreatedAt = DateTimeOffset.Now,
             UpdatedAt = DateTimeOffset.Now
