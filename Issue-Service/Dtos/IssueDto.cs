@@ -1,5 +1,4 @@
-﻿using Issue_Service.Models;
-using Sprint_Service.Models;
+﻿using Sprint_Service.Models;
 
 namespace Issue_Service.Dtos;
 

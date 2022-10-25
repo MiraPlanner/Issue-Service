@@ -1,5 +1,4 @@
 ﻿using Issue_Service.Dtos;
-using Issue_Service.Models;
 
 namespace Issue_Service.Interfaces;
 

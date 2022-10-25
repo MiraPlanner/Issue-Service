@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
-using Issue_Service.Models;
 using Sprint_Service.Models;
 
 namespace Issue_Service.Dtos;
