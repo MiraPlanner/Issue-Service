@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Mira_Common;
 using Issue_Service.Dtos;
 using Issue_Service.Interfaces;
-using Issue_Service.Models;
 
 namespace Issue_Service.Controllers;
 
