@@ -2,16 +2,20 @@
 using Issue_Service.Dtos;
 using Issue_Service.Interfaces;
 using Issue_Service.Models;
+using MassTransit;
+using Mira_Contracts.IssueContracts;
 
 namespace Issue_Service.Services;
 
 public class IssueService : IIssueService
 {
     private readonly IRepository<Issue> _issueRepository;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public IssueService(IRepository<Issue> issueRepository)
+    public IssueService(IRepository<Issue> issueRepository, IPublishEndpoint publishEndpoint)
     {
         _issueRepository = issueRepository;
+        _publishEndpoint = publishEndpoint;
     }
     
     public async Task<IEnumerable<IssueDto>> GetAll()
@@ -43,15 +47,17 @@ public class IssueService : IIssueService
             CreatedAt = DateTimeOffset.Now,
             UpdatedAt = DateTimeOffset.Now
         };
-
         await _issueRepository.Create(issue);
-        
-        // This will be a contract from a common lib
-        // Params will go inside 
-        /*
-        await publishEndpoint.Publish(new IssueCreated());
-        */
-        
+
+        var issueCreatedContract = new IssueCreated(
+            issue.Id,
+            issue.SprintId,
+            issue.Title,
+            issue.IssueStatus,
+            issue.IssueType
+        );
+        await _publishEndpoint.Publish(issueCreatedContract);
+
         return issue.AsDto();
     }
 
@@ -69,11 +75,14 @@ public class IssueService : IIssueService
         
         await _issueRepository.Update(issue);
         
-        // This will be a contract from a common lib
-        // Params will go inside 
-        /*
-        await publishEndpoint.Publish(new IssueUpdated(issue.Id, issue.Name, issue.Description));
-        */
+        var issueUpdatedContract = new IssueUpdated(
+            issue.Id,
+            issue.SprintId,
+            issue.Title,
+            issue.IssueStatus,
+            issue.IssueType
+        );
+        await _publishEndpoint.Publish(issueUpdatedContract);
         
         return issue.AsDto();
     }
@@ -86,12 +95,8 @@ public class IssueService : IIssueService
 
         await _issueRepository.Delete(item.Id);
         
-        // This will be a contract from a common lib
-        // Params will go inside 
-        /*
-        await publishEndpoint.Publish(new IssueDeleted());
-        */
-        
+        await _publishEndpoint.Publish(new IssueDeleted(item.Id));
+
         return item.AsDto();
     }
 }
