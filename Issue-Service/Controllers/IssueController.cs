@@ -37,6 +37,8 @@ public class IssueController : ControllerBase
     public async Task<ActionResult<IssueDto>> Create(CreateIssueDto createIssueDto)
     {
         var issue = await _issueService.Create(createIssueDto);
+
+        if (issue == null) return BadRequest();
         
         return CreatedAtAction(nameof(GetById), new { id = issue.Id }, issue);
     }

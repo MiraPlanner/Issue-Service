@@ -58,6 +58,7 @@ public class IssueControllerTests
     [Fact]
     public void GetAll_ReturnsAllIssues()
     {
+        // Arrange
         _mockService.Setup(service => service.GetAll())
             .ReturnsAsync(GetIssueDtos());
         var controller = new IssueController(_mockService.Object);
@@ -76,6 +77,7 @@ public class IssueControllerTests
     [Fact]
     public void GetAll_ReturnsNoIssues_WhenIssuesNotFound()
     {
+        // Arrange
         _mockService.Setup(service => service.GetAll())
             .ReturnsAsync(new List<IssueDto>());
         var controller = new IssueController(_mockService.Object);
@@ -88,6 +90,42 @@ public class IssueControllerTests
         var okResult = Assert.IsType<OkObjectResult>(task.Result.Result);
         var returnValue = Assert.IsType<List<IssueDto>>(okResult.Value);
         Assert.Empty(returnValue);
+    }
+    
+    [Fact]
+    public void Create_ReturnsBadRequest_GivenInvalidIssue()
+    {
+        // Arrange
+        var controller = new IssueController(_mockService.Object);
+        CreateIssueDto createIssueDto = new CreateIssueDto(null, "", null, 5, IssueStatus.ToDo, IssueType.Task);
+        
+        // Act
+        var result = controller.Create(createIssueDto);
+
+        // Assert
+        var task = Assert.IsType<Task<ActionResult<IssueDto>>>(result);
+        var actionResult = task.Result;
+        Assert.IsType<BadRequestResult>(actionResult.Result);
+    }
+
+    [Fact] 
+    public void Create_ReturnsNewlyCreatedIssue()
+    {
+        // Arrange
+        Guid testSessionGuid = new Guid("62FA647C-AD54-4BCC-A860-E5A2664B017D");
+        _mockService.Setup(service => service.Create(It.IsAny<CreateIssueDto>()))
+            .ReturnsAsync(GetIssueDto(testSessionGuid));
+        var controller = new IssueController(_mockService.Object);
+        CreateIssueDto createIssueDto = new CreateIssueDto(null, "", null, 5, IssueStatus.ToDo, IssueType.Task);
+        
+        // Act
+        var result = controller.Create(createIssueDto);
+
+        // Assert
+        var task = Assert.IsType<Task<ActionResult<IssueDto>>>(result);
+        var okResult = Assert.IsType<CreatedAtActionResult>(task.Result.Result);
+        var issue = Assert.IsType<IssueDto>(okResult.Value);
+        Assert.Equal("Title", issue.Title);
     }
     
     private IssueDto GetIssueDto(Guid id)
