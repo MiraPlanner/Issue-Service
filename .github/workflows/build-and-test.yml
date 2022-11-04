@@ -30,10 +30,42 @@ jobs:
         
       - name: Test
         run: dotnet test --no-restore --verbosity normal
-        
-      - name: SonarCloud Scan
-        uses: highbyte/sonarscan-dotnet@v2.1.3
+          
+      # Speed-up analysis by caching the scanner workspace
+      - name: Cache SonarCloud workspace
+        uses: actions/cache@v1
         with:
-          sonarProjectKey: miraplanner
-          sonarProjectName: Issue-Service
-          sonarOrganization: MiraPlanner
+          path: ~\.sonar\cache
+          key: ${{ runner.os }}-sonar-cache
+          restore-keys: ${{ runner.os }}-sonar-cache
+
+      # Speed-up analysis by caching the scanner installation
+      - name: Cache SonarCloud scanner
+        id: cache-sonar-scanner
+        uses: actions/cache@v1
+        with:
+          path: .\.sonar\scanner
+          key: ${{ runner.os }}-sonar-scanner
+          restore-keys: ${{ runner.os }}-sonar-scanner
+
+      - name: Install SonarCloud scanner
+        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+        shell: powershell
+       # The --version argument is optional. If it is omitted the latest version will be installed.
+        run: |
+         New-Item -Path .\.sonar\scanner -ItemType Directory
+         dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner --version 4.8.0
+          
+      - name: Build
+        shell: powershell
+        env:
+          # Needed to get some information about the pull request, if any
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # The secret referenced in the command-line by SONAR_TOKEN should be generated
+          # from https://sonarcloud.io/account/security/
+          # The organization and project arguments (see /o and /k) are displayed
+          # on the project dashboard in SonarCloud.
+        run: |
+           .\.sonar\scanner\dotnet-sonarscanner begin /k:"SonarSource_sonarcloud-github-action-samples" /o:"sonarsource" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+           dotnet build SomeConsoleApplication.sln
+           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
