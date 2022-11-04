@@ -10,7 +10,7 @@ env:
   DOTNET_VERSION: '6.0.402'
 
 jobs:
-  unit test:
+  build-and-test:
     
     name: run unit tests
     runs-on: ubuntu-latest
