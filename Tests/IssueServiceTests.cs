@@ -36,24 +36,6 @@ public class IssueServiceTests
        Assert.Equal("First Issue", issue!.Title);
    }
 
-   /*[Fact]
-   public void GetAll_ReturnsNoIssues_WhenIssuesNotFound()
-   {
-       // Arrange
-       _mockRepository.Setup(service => service.GetAll())
-           .ReturnsAsync(new List<IssueDto>());
-       var controller = new IssueController(_mockRepository.Object);
-
-       // Act
-       var result = controller.GetAll();
-
-       // Assert
-       var task = Assert.IsType<Task<ActionResult<IEnumerable<IssueDto>>>>(result);
-       var okResult = Assert.IsType<OkObjectResult>(task.Result.Result);
-       var returnValue = Assert.IsType<List<IssueDto>>(okResult.Value);
-       Assert.Empty(returnValue);
-   }*/
-   
    [Fact]
    public void GetById_ReturnsIssue()
    {
