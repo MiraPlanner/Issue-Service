@@ -37,7 +37,7 @@ jobs:
           path: /home/runner/work/Issue-Service/Issue-Service/release/
   
   analyse:
-    name: Run Unit Tests
+    name: Unit Tests
     needs: [ build ]
     runs-on: ubuntu-latest
     
