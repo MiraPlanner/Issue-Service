@@ -28,10 +28,9 @@ jobs:
         run: dotnet build --configuration Release --no-restore
 
       - name: Persist workflow data as artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         with:
           name: github-action-artifact
-          path: staging
     
       - name: Test
         run: dotnet test --no-restore --verbosity normal
