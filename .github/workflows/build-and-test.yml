@@ -38,6 +38,7 @@ jobs:
   
   analyse:
     name: Run Unit Tests
+    needs: [ build ]
     runs-on: ubuntu-latest
     
     steps:
