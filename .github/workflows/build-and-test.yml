@@ -62,20 +62,15 @@ jobs:
       - name: Install SonarCloud scanner
         if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
         shell: powershell
-        # The --version argument is optional. If it is omitted the latest version will be installed.
         run: |
           New-Item -Path .\.sonar\scanner -ItemType Directory
           dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner --version 4.8.0
-      - name: Build
-        shell: powershell
+
+      - name: Build and Analyse
         env:
-          # Needed to get some information about the pull request, if any
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # The secret referenced in the command-line by SONAR_TOKEN should be generated
-          # from https://sonarcloud.io/account/security/
-          # The organization and project arguments (see /o and /k) are displayed
-          # on the project dashboard in SonarCloud.
+        shell: powershell
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"SonarSource_sonarcloud-github-action-samples" /o:"sonarsource" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-          dotnet build SomeConsoleApplication.sln
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"MiraPlanner_Issue-Service" /o:"miraplanner" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+          dotnet build Issue-Service.sln
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
