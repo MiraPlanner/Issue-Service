@@ -26,12 +26,16 @@ jobs:
 
       - name: Build
         run: dotnet build --configuration Release --no-restore
-
+      
+      - name: Publish
+        run: dotnet publish Issue-Service/Issue-Service.csproj -c Release -o release --nologo
+      
       - name: Persist workflow data as artifact
         uses: actions/upload-artifact@v3
         with:
           name: github-action-artifact
-    
+          path: /home/runner/work/Issue-Service/Issue-Service/release/
+
       - name: Test
         run: dotnet test --no-restore --verbosity normal
       
