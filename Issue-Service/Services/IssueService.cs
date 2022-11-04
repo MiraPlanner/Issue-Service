@@ -34,7 +34,7 @@ public class IssueService : IIssueService
         return issue.AsDto();
     }
 
-    public async Task<IssueDto> Create(CreateIssueDto createIssueDto)
+    public async Task<IssueDto?> Create(CreateIssueDto createIssueDto)
     {
         var issue = new Issue
         {

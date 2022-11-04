@@ -37,12 +37,14 @@ public class IssueController : ControllerBase
     public async Task<ActionResult<IssueDto>> Create(CreateIssueDto createIssueDto)
     {
         var issue = await _issueService.Create(createIssueDto);
+
+        if (issue == null) return BadRequest();
         
         return CreatedAtAction(nameof(GetById), new { id = issue.Id }, issue);
     }
     
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id, UpdateIssueDto updateIssueDto)
+    public async Task<ActionResult> Update(Guid id, UpdateIssueDto updateIssueDto)
     {
         var issue = await _issueService.Update(id, updateIssueDto);
 
@@ -52,7 +54,7 @@ public class IssueController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(Guid id)
+    public async Task<ActionResult> Delete(Guid id)
     {
         var issue = await _issueService.Delete(id);
 
