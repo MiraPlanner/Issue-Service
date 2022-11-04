@@ -11,7 +11,7 @@ env:
 
 jobs:
   build:
-    name: Run Unit Tests
+    name: Build
     runs-on: ubuntu-latest
     
     steps:
@@ -33,9 +33,22 @@ jobs:
       - name: Persist workflow data as artifact
         uses: actions/upload-artifact@v3
         with:
-          name: github-action-artifact
+          name: issue-artifact
           path: /home/runner/work/Issue-Service/Issue-Service/release/
+  
+  analyse:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
 
+      - name: Download workflow data
+        uses: actions/download-artifact@v3
+        with:
+          name: issue-artifact
+          path: /home/runner/work/Issue-Service/Issue-Service/release/
+      
       - name: Test
         run: dotnet test --no-restore --verbosity normal
       
