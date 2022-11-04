@@ -11,22 +11,35 @@ env:
 
 jobs:
   build:
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Install dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Persist workflow data as artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: github-action-artifact
+        path: staging
+  
+  
+  analyse:
     name: Unit Test
     runs-on: ubuntu-latest
     
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v3
+      - name: Download workflow data
+        uses: actions/download-artifact@v1
         with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-
-      - name: Install dependencies
-        run: dotnet restore
-
-      - name: Build
-        run: dotnet build --configuration Release --no-restore
-        
+          name: github-action-artifact
+          path: target/
+      
       - name: Test
         run: dotnet test --no-restore --verbosity normal
           
