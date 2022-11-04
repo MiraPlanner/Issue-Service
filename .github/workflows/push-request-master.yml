@@ -1,0 +1,141 @@
+name: Push Request to Master
+
+on:
+  push:
+    branches: [master]
+    
+env: 
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}  
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Install dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Publish
+        run: dotnet publish Issue-Service/Issue-Service.csproj -c Release -o release --nologo
+
+      - name: Persist workflow data as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: issue-artifact
+          path: /home/runner/work/Issue-Service/Issue-Service/release/
+  
+  analyse:
+    name: Unit Tests
+    needs: [ build ]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download workflow data
+        uses: actions/download-artifact@v3
+        with:
+          name: issue-artifact
+          path: /home/runner/work/Issue-Service/Issue-Service/release/
+
+      - name: Test
+        run: dotnet test --no-restore --verbosity normal
+
+  sonarcloud:
+    name: SonarCloud
+    runs-on: windows-latest
+
+    steps:
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.11
+
+      - uses: actions/checkout@v2
+        with:
+          # Shallow clones should be disabled for a better relevancy of analysis
+          fetch-depth: 0
+
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v1
+        with:
+          path: ~\sonar\cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Cache SonarCloud scanner
+        id: cache-sonar-scanner
+        uses: actions/cache@v1
+        with:
+          path: .\.sonar\scanner
+          key: ${{ runner.os }}-sonar-scanner
+          restore-keys: ${{ runner.os }}-sonar-scanner
+
+      - name: Install SonarCloud scanner
+        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+        shell: powershell
+        run: |
+          New-Item -Path .\.sonar\scanner -ItemType Directory
+          dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
+
+      - name: Build and analyze
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        shell: powershell
+        run: |
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"MiraPlanner_Issue-Service" /o:"miraplanner" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+          dotnet build Issue-Service.sln
+          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+  
+  
+  deploy:
+    name: Build Docker image and push to repository
+    needs: [ build, analyse, sonarcloud ]
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to Registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Extract Docker Metadata
+        id: meta
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: .
+          file: ./Issue-Service/Dockerfile
+          tags: ${{steps.meta.outputs.tags}}
+          labels: ${{steps.meta.output.labels}}
+
+          # build on feature branches, push only on master branch
+          push: ${{ github.ref == 'refs/heads/master' }}
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}

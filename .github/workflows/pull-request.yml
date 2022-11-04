@@ -1,17 +1,12 @@
-﻿name: Build and Test
-
-on:
-  push:
-    branches: ['*']
-  pull_request:
-    branches: [ main ]
+﻿name: Pull Request
+on: [ pull_request ]
 
 env:
   DOTNET_VERSION: '6.0.402'
 
 jobs:
   build:
-    name: run unit tests
+    name: Build
     runs-on: ubuntu-latest
     
     steps:
@@ -26,11 +21,32 @@ jobs:
 
       - name: Build
         run: dotnet build --configuration Release --no-restore
-        
+      
+      - name: Publish
+        run: dotnet publish Issue-Service/Issue-Service.csproj -c Release -o release --nologo
+      
+      - name: Persist workflow data as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: issue-artifact
+          path: /home/runner/work/Issue-Service/Issue-Service/release/
+  
+  analyse:
+    name: Unit Tests
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download workflow data
+        uses: actions/download-artifact@v3
+        with:
+          name: issue-artifact
+          path: /home/runner/work/Issue-Service/Issue-Service/release/
+      
       - name: Test
         run: dotnet test --no-restore --verbosity normal
-          
-      
       
   sonarcloud:
     name: SonarCloud
