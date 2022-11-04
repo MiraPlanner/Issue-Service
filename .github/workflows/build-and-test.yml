@@ -10,8 +10,7 @@ env:
   DOTNET_VERSION: '6.0.402'
 
 jobs:
-  build-and-test:
-    
+  build:
     name: run unit tests
     runs-on: ubuntu-latest
     
@@ -31,6 +30,18 @@ jobs:
       - name: Test
         run: dotnet test --no-restore --verbosity normal
           
+      
+      
+  sonarcloud:
+    name: SonarCloud
+    runs-on: windows-latest
+    
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # Shallow clones should be disabled for a better relevancy of analysis
+          fetch-depth: 0
+      
       # Speed-up analysis by caching the scanner workspace
       - name: Cache SonarCloud workspace
         uses: actions/cache@v1
@@ -38,7 +49,7 @@ jobs:
           path: ~\.sonar\cache
           key: ${{ runner.os }}-sonar-cache
           restore-keys: ${{ runner.os }}-sonar-cache
-
+      
       # Speed-up analysis by caching the scanner installation
       - name: Cache SonarCloud scanner
         id: cache-sonar-scanner
@@ -50,14 +61,13 @@ jobs:
 
       - name: Install SonarCloud scanner
         if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
-        shell: bash
-       # The --version argument is optional. If it is omitted the latest version will be installed.
+        shell: powershell
+        # The --version argument is optional. If it is omitted the latest version will be installed.
         run: |
-         New-Item -Path .\.sonar\scanner -ItemType Directory
-         dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner --version 4.8.0
-          
+          New-Item -Path .\.sonar\scanner -ItemType Directory
+          dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner --version 4.8.0
       - name: Build
-        shell: bash
+        shell: powershell
         env:
           # Needed to get some information about the pull request, if any
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -66,6 +76,6 @@ jobs:
           # The organization and project arguments (see /o and /k) are displayed
           # on the project dashboard in SonarCloud.
         run: |
-           .\.sonar\scanner\dotnet-sonarscanner begin /k:"SonarSource_sonarcloud-github-action-samples" /o:"sonarsource" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-           dotnet build SomeConsoleApplication.sln
-           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"SonarSource_sonarcloud-github-action-samples" /o:"sonarsource" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+          dotnet build SomeConsoleApplication.sln
+          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
