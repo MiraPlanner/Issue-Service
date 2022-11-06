@@ -19,7 +19,7 @@ public class IssueControllerIntegrationTests : IClassFixture<IntegrationDb>
 
         repository = new MongoRepository<Issue>(integrationDb.Database, "issues-test");
         var service = new IssueService(repository, mockPublishEndpoint.Object);
-        var issueController = new IssueController(service);
+       _issueController = new IssueController(service);
     }
     
     [Fact]
