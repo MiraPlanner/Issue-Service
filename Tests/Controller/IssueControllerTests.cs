@@ -5,7 +5,7 @@ using Issue_Service.Models;
 using Microsoft.AspNetCore.Mvc;
 using Sprint_Service.Models;
 
-namespace Tests;
+namespace Tests.Controller;
 
 public class IssueControllerTests
 {
