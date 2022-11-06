@@ -11,6 +11,7 @@ namespace Tests;
 public class IssueControllerIntegrationTests : IClassFixture<IntegrationDb>
 {
     private MongoRepository<Issue> repository;
+    private IssueController _issueController;
 
     public IssueControllerIntegrationTests(IntegrationDb integrationDb)
     {
@@ -51,8 +52,9 @@ public class IssueControllerIntegrationTests : IClassFixture<IntegrationDb>
             IssueStatus.ToDo,
             IssueType.Task
         );
-
-        IssueController.Create(createIssueDto);
+        
+        
+        await _issueController.Create(createIssueDto);
         var issues = await repository.GetAll();
         
         Assert.Null(issues);
