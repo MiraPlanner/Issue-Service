@@ -10,7 +10,7 @@ public class IssueControllerIntegrationTests : IClassFixture<DbFixture>, IClassF
 {
     private readonly HttpClient _client;
     
-    public IssueControllerIntegrationTests(DbFixture dbFixture, CustomWebApplicationFactory factory)
+    public IssueControllerIntegrationTests(CustomWebApplicationFactory factory)
     {
         _client = factory.CreateClient();
     }
