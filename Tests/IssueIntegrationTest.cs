@@ -4,11 +4,15 @@ using Sprint_Service.Models;
 
 namespace Tests;
 
-public class IssueIntegrationTest : IClassFixture<CustomWebAppFactory<Program>>
+public class IssueIntegrationTest : IClassFixture<DbFixture>
 {
     private readonly HttpClient _client;
-    public IssueIntegrationTest(CustomWebAppFactory<Program> factory) 
-        => _client = factory.CreateClient();
+
+    public IssueIntegrationTest(DbFixture dbFixture)
+    {
+        CustomWebApplicationFactory factory = new CustomWebApplicationFactory(dbFixture);
+        _client = factory.CreateClient();
+    }
     
     [Fact]
     public async Task Index_WhenCalled_ReturnsApplicationForm()

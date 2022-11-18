@@ -8,16 +8,16 @@ using Sprint_Service.Models;
 
 namespace Tests;
 
-public class IssueControllerIntegrationTests : IClassFixture<IntegrationDb>
+public class IssueControllerIntegrationTests : IClassFixture<DbFixture>
 {
     private MongoRepository<Issue> repository;
     private IssueController _issueController;
 
-    public IssueControllerIntegrationTests(IntegrationDb integrationDb)
+    public IssueControllerIntegrationTests(DbFixture dbFixture)
     {
         var mockPublishEndpoint = new Mock<IPublishEndpoint>();
 
-        repository = new MongoRepository<Issue>(integrationDb.Database, "issues-test");
+        repository = new MongoRepository<Issue>(dbFixture.Database, "issues-test");
         var service = new IssueService(repository, mockPublishEndpoint.Object);
        _issueController = new IssueController(service);
     }

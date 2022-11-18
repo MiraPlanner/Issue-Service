@@ -10,13 +10,13 @@ using MongoDB.Driver;
 
 namespace Tests;
 
-public class CustomWebAppFactory<TEntryPoint> : WebApplicationFactory<Program> where TEntryPoint : Program
+public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 {
-    private readonly IntegrationDb _integrationDb;
+    private readonly DbFixture _dbFixture;
     
-    public CustomWebAppFactory()
+    public CustomWebApplicationFactory(DbFixture dbFixture)
     {
-        _integrationDb = new IntegrationDb();
+        _dbFixture = dbFixture;
     }
     
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -28,7 +28,7 @@ public class CustomWebAppFactory<TEntryPoint> : WebApplicationFactory<Program> w
                      typeof(IMongoDatabase));
             if (descriptor != null)
                 services.Remove(descriptor);
-            services.AddSingleton(_ => _integrationDb.Database);
+            services.AddSingleton(_ => _dbFixture.Database);
             
             services.RemoveMassTransitHostedService();
             services.AddMassTransitTestHarness();

@@ -3,8 +3,8 @@ using MongoDB.Driver;
 
 namespace Tests;
 
-[Trait("Category","Integration")]
-public class IntegrationDb : IDisposable
+[Trait("Category", "Integration")]
+public class DbFixture : IDisposable
 {
     public MongoDbRunner Runner { get { return _runner; } }
     public MongoClient Client { get { return _client; } }
@@ -14,16 +14,17 @@ public class IntegrationDb : IDisposable
     private MongoClient _client;
     private IMongoDatabase _fakeDb;
 
-    public IntegrationDb()
+    public DbFixture()
     {
         _runner = MongoDbRunner.Start();
         _client = new MongoClient(_runner.ConnectionString);
         _fakeDb = _client.GetDatabase("issues-test");
     }
-    
+
     public void Dispose()
     {
         _runner.Dispose();
+        _client.DropDatabase("issues-test");
         _runner = null;
         _client = null;
         _fakeDb = null;
