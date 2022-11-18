@@ -93,7 +93,7 @@ public class IssueControllerTests
     }
     
     [Fact]
-    public void Create_ReturnsBadRequest_GivenInvalidIssue()
+    public void Create_ReturnsBadRequest_WhenIssueInvalid()
     {
         // Arrange
         var controller = new IssueController(_mockService.Object);

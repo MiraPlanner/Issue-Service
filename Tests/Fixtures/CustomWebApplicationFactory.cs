@@ -1,22 +1,18 @@
-﻿
-
-using Castle.Core.Configuration;
-using MassTransit;
+﻿using MassTransit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using Mira_Common.Settings;
 using MongoDB.Driver;
 
-namespace Tests;
+namespace Tests.Fixtures;
 
 public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 {
     private readonly DbFixture _dbFixture;
     
-    public CustomWebApplicationFactory(DbFixture dbFixture)
+    public CustomWebApplicationFactory()
     {
-        _dbFixture = dbFixture;
+        _dbFixture = new DbFixture();
     }
     
     protected override void ConfigureWebHost(IWebHostBuilder builder)
