@@ -24,7 +24,6 @@ public class DbFixture : IDisposable
     public void Dispose()
     {
         _runner.Dispose();
-        _client.DropDatabase("issues-test");
         _runner = null;
         _client = null;
         _fakeDb = null;
