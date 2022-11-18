@@ -6,9 +6,7 @@ namespace Tests;
 [Trait("Category", "Integration")]
 public class DbFixture : IDisposable
 {
-    public MongoDbRunner Runner { get { return _runner; } }
-    public MongoClient Client { get { return _client; } }
-    public IMongoDatabase Database { get { return _fakeDb; } }
+    public IMongoDatabase Database => _fakeDb;
 
     private MongoDbRunner _runner;
     private MongoClient _client;

@@ -4,11 +4,11 @@ using Sprint_Service.Models;
 
 namespace Tests;
 
-public class IssueIntegrationTest : IClassFixture<DbFixture>
+public class IssueControllerIntegrationTests : IClassFixture<DbFixture>
 {
     private readonly HttpClient _client;
 
-    public IssueIntegrationTest(DbFixture dbFixture)
+    public IssueControllerIntegrationTests(DbFixture dbFixture)
     {
         CustomWebApplicationFactory factory = new CustomWebApplicationFactory(dbFixture);
         _client = factory.CreateClient();
