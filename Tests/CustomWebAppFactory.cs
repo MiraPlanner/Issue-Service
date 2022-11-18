@@ -1,6 +1,7 @@
 ﻿
 
 using Castle.Core.Configuration;
+using MassTransit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,10 +25,13 @@ public class CustomWebAppFactory<TEntryPoint> : WebApplicationFactory<Program> w
         {
             var descriptor = services.SingleOrDefault(
                 d => d.ServiceType ==
-                     typeof(MongoDB.Driver.IMongoDatabase));
+                     typeof(IMongoDatabase));
             if (descriptor != null)
                 services.Remove(descriptor);
             services.AddSingleton(_ => _integrationDb.Database);
+            
+            services.RemoveMassTransitHostedService();
+            services.AddMassTransitTestHarness();
         });
     }
 }

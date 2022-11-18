@@ -24,7 +24,7 @@ public class IssueIntegrationTest : IClassFixture<CustomWebAppFactory<Program>>
         
         var create = await _client.PostAsJsonAsync("/issues", createIssueDto);
         
-        var response = await _client.GetAsync($"/issues/{new Guid()}");
+        var response = await _client.GetAsync($"/issues");
         response.EnsureSuccessStatusCode();
         var responseString = await response.Content.ReadAsStringAsync();
         Assert.Null(responseString);
