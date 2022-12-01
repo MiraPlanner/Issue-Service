@@ -160,7 +160,7 @@ public class IssueServiceTests
        Assert.Null(task.Result);
    }
    
-   private Issue GetIssue(Guid id)
+   private static Issue GetIssue(Guid id)
    {
        return new Issue
        {
@@ -173,7 +173,7 @@ public class IssueServiceTests
        };
    }
 
-   private IReadOnlyCollection<Issue> GetIssues()
+   private static IReadOnlyCollection<Issue> GetIssues()
    {
        List<Issue> issues = new List<Issue>
        {

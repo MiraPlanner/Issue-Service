@@ -200,7 +200,7 @@ public class IssueControllerTests
         Assert.IsType<NotFoundResult>(task.Result);
     }
     
-    private IssueDto GetIssueDto(Guid id)
+    private static IssueDto GetIssueDto(Guid id)
     {
         return new Issue()
         {
@@ -213,7 +213,7 @@ public class IssueControllerTests
         }.AsDto();
     }
 
-    private IEnumerable<IssueDto> GetIssueDtos()
+    private static IEnumerable<IssueDto> GetIssueDtos()
     {
         List<IssueDto> issueDtos = new List<IssueDto>();
         issueDtos.Add(new Issue()

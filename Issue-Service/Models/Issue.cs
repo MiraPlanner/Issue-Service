@@ -8,7 +8,7 @@ public class Issue : IEntity
 {
     public Guid Id { get; set; }
     public Guid? SprintId { get; set; }
-    public string Title { get; set; }
+    public string? Title { get; set; }
     public string? Description { get; set; }
     public int? Duration { get; set; }
     public IssueStatus IssueStatus { get; set; }

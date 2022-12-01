@@ -35,4 +35,4 @@ app.MapControllers();
 
 app.Run();
 
-public partial class Program { }
+public abstract partial class Program { }
