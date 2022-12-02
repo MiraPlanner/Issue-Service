@@ -67,10 +67,12 @@ public class IssueService : IIssueService
 
         if (issue == null) return null!;
 
+        issue.SprintId = updateIssueDto.SprintId;
         issue.Title = updateIssueDto.Title;
         issue.Description = updateIssueDto.Description;
         issue.Duration = updateIssueDto.Duration;
         issue.IssueType = updateIssueDto.IssueType;
+        issue.IssueStatus = updateIssueDto.IssueStatus;
         issue.UpdatedAt = DateTimeOffset.Now;
         
         await _issueRepository.Update(issue);
