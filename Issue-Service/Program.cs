@@ -6,7 +6,7 @@ using Mira_Common.MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var allowedHosts = builder.Configuration.GetSection("AllowedHosts").Value.Split(";");
+var allowedOrigins = builder.Configuration.GetSection("AllowedHosts").Value.Split(";");
 
 // Add services to the container.
 builder.Services.AddCors();
@@ -33,7 +33,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors(c => c
-    .WithOrigins(allowedHosts)
+    .WithOrigins(allowedOrigins)
     .AllowAnyHeader()
     .AllowAnyMethod());
 
