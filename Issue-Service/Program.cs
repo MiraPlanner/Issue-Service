@@ -6,7 +6,7 @@ using Mira_Common.MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var allowedOrigins = builder.Configuration.GetSection("AllowedHosts").Value.Split(";");
+var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Value.Split(";");
 
 // Add services to the container.
 builder.Services.AddCors();
